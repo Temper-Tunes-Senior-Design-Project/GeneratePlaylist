@@ -118,6 +118,8 @@ def generateNewSongsList(mood, num_songs, closest_song_ids, old_songs_list): ###
     # Remove any elements that are None
     track_info = [track for track in track_info if track is not None]
     # Extract the URIs from the track information
+    if len(track_info) == 0:
+        return {"error": "could not identify any tracks in the closest songs list"}
     track_uris = [track['uri'] for track in track_info]
     final_song_ids = []
     while len(final_song_ids) < num_songs:        
