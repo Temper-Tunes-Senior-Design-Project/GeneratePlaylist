@@ -1,4 +1,3 @@
-import requests
 from flask import jsonify, Flask
 from flask_cors import CORS, cross_origin
 import json
@@ -261,18 +260,19 @@ def retrieveTrackFeatures(track_ids):
     dfs = []
     for i in range(0, len(track_ids), 50):
         # Retrieve track features with current offset
-        current_features = sp.audio_features(track_ids[i:i+50])
-        
-        # Convert to DataFrame
-        df = pd.DataFrame(current_features)
-        
-#         # Remove columns that we don't need
-#         df = df.drop(['type', 'uri', 'analysis_url', 'track_href'], axis=1)
-        
-        df = df[['id', 'valence', 'energy']]
-        
-        # Append to list of dataframes
-        dfs.append(df)
+        features = sp.audio_features(track_ids[i:i+50])
+        checked_features = [l for l in features if l is not None]
+        if len(checked_features) > 0:
+            # Convert to DataFrame
+            df = pd.DataFrame(checked_features)
+            
+    #         # Remove columns that we don't need
+    #         df = df.drop(['type', 'uri', 'analysis_url', 'track_href'], axis=1)
+            
+            df = df[['id', 'valence', 'energy']]
+            
+            # Append to list of dataframes
+            dfs.append(df)
     
     # Concatenate all dataframes into a single one
     features_df = pd.concat(dfs, ignore_index=True)
