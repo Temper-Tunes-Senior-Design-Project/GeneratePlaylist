@@ -125,12 +125,11 @@ def generateNewSongsList(mood, num_songs, closest_song_ids, old_songs_list): ###
             predictions = {}
             stop_loops = False
 
-            for key, row in features_df.iterrows():
+            LR_pred, LR_pred_probability = getMoodLabelLR(features_df)
+            for i, (key, row) in enumerate(features_df.iterrows()):
                 if not(stop_loops):
-                    data = row.values.reshape(1,-1)
-                    LR_pred, LR_pred_probability = getMoodLabelLR(data)
-                    predictions[key]=LR_pred
-                    if LR_pred in acceptable_moods: song_count += 1
+                    predictions[key]=LR_pred[i]
+                    if LR_pred[i] in acceptable_moods: song_count += 1
                     stop_loops = (song_count == num_songs)
 
             # Add song moods to DB
@@ -242,7 +241,7 @@ def addTrackMoodToDB(tracks_dict):
     for track_id, mood in tracks_dict.items():
         doc_ref = db.collection('songs').document(track_id)
         doc_ref.set({
-            'mood': int(mood[0])
+            'mood': int(mood)
         })
     
 #______________________________________________
