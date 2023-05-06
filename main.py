@@ -124,7 +124,7 @@ def generateNewSongsList(mood, num_songs, closest_song_ids, old_songs_list): ###
         
         # Get predictions and update database
         # If there are no features or lyrics, and no songs are already labelled return an error
-        if processed_features_df.shape[0] == 0 and len(known_track_moods_dict.keys()) == 0:
+        if processed_features_df is None or (processed_features_df.shape[0] == 0 and len(known_track_moods_dict.keys()) == 0):
             return {"error": "Issue with model and/or spotify server"}
         else:
             predictions = {}
@@ -290,6 +290,7 @@ def retrieveTrackFeatures(track_ids):
 
             # Append to list of dataframes
             dfs.append(df)
+    if len(dfs) == 0: return None
     
     # Concatenate all dataframes into a single one
     features_df = pd.concat(dfs, ignore_index=True)
@@ -299,6 +300,7 @@ def retrieveTrackFeatures(track_ids):
     return features_df
 
 def clipAndNormalizeMLP(features):
+    if features is None: return None
     #clip the features to the range of the training data
     features['danceability'] = features['danceability'].clip(lower=0.25336000000000003, upper=0.9188199999999997)
     features['energy'] = features['energy'].clip(lower=0.047536, upper=0.982)
