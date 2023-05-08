@@ -102,7 +102,9 @@ def generateNewSongsList(mood, num_songs, closest_song_ids, old_songs_list): ###
     counts = {}
     
     # Use Spotipy to retrieve track information
-    track_info = sp.tracks(closest_song_ids)['tracks']
+    track_info = []
+    for i in range(0, len(closest_song_ids), 50):
+        track_info.extend(sp.tracks(closest_song_ids[i:i+50])['tracks'])
     # Remove any elements that are None
     track_info = [track for track in track_info if track is not None]
     if len(track_info) == 0:
@@ -201,7 +203,9 @@ def generateOldSongsList(num_old_songs, closest_song_ids):
     if sp == None:
         spotify_client()
         firestoreConnection()
-    tracks = sp.tracks(closest_song_ids)['tracks']
+    tracks = []
+    for i in range(0, len(closest_song_ids), 50):
+        tracks.extend(sp.tracks(closest_song_ids[i:i+50])['tracks'])
     track_ids = [track["id"] for track in tracks if track is not None]
     if num_old_songs > len(track_ids): return track_ids
     song_ids_list = []
